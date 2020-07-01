@@ -73,7 +73,7 @@ const questionCompile = (data) => {
     const { name, id, email, school } = data;
     employee = new Intern(name, id, email, school)
   } else if (data.Employee == "Manager") {
-    const { name, id, email, officeNumber} = data;
+    const { name, id, email, officeNumber } = data;
     employee = new Manager(name, id, email, officeNumber)
   }
 
