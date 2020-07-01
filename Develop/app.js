@@ -10,69 +10,108 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-
 const questions = [
-    {
-      type: "input",
-      message: "What is your name?",
-      name: "name",
-    },
-    {
-      type: "input",
-      message: "What is your ID?",
-      name: "id",
-    },
-    {
-      type: "input",
-      message: "What is your email?",
-      name: "email",
-    },
-    {
-      type: "input",
-      message: "What is your office number?",
-      name: "officeNumber",
-    },
-    {
-      type: "list",
-      message: "Would you like to add another team member?",
-      name: "role",
-      choices: [
-        {
-          name: "Yes, add an Intern.",
-          value: "intern",
-        },
-        {
-          name: "Yes, add an Engineer",
-          value: "engineer",
-        },
-        {
-          name: "No, I'm good!!",
-          value: "none",
-        },
-      ],
-    },
-  ];
-  
-  // This is the function that using the generateMarkdown and the user's questions to generate the complete README.
-  function init() {
-    inquirer.prompt(questions).then((data) => {
-        if(role.Engineer === true){
-            prompt(questionsEngineer);
-        } else if ()
-      fs.writeFile("wat.html", render(data), function (
-        err
-      ) {
-        if (err) {
-          return console.log(err);
-        }
-  
-        console.log("Success!");
-      });
-    });
+  {
+    type: "list",
+    message: "Which type of employee would you like to add?",
+    name: "Employee",
+    choices: ["Engineer", "Manager", "Intern"],
+  },
+  {
+    type: "input",
+    message: "What is their name?",
+    name: "name",
+  },
+  {
+    type: "input",
+    message: "What is their ID?",
+    name: "id",
+  },
+  {
+    type: "input",
+    message: "What is their email?",
+    name: "email",
+  },
+  {
+    type: "input",
+    message: "What is the manager's office number?",
+    name: "officeNumber",
+    when: (data) => data.Employee == "Manager",
+  },
+  {
+    type: "input",
+    message: "What is the engineer's GitHub username?",
+    name: "github",
+    when: (data) => data.Employee == "Engineer",
+  },
+  {
+    type: "input",
+    message: "What school does the intern attend?",
+    name: "school",
+    when: (data) => data.Employee == "Intern",
+  },
+  {
+    type: "confirm",
+    message: "Would you like to add another team member?",
+    name: "finished",
+  },
+];
+
+const employees = [];
+
+
+const init = () => {
+  inquirer.prompt(questions).then(questionCompile);
+};
+
+const questionCompile = (data) => {
+  let employee;
+  if (data.Employee == "Engineer") {
+    const { name, id, email, github } = data;
+    employee = new Engineer(name, id, email, github);
+  } else if (data.Employee == "Intern") {
+    const { name, id, email, school } = data;
+    employee = new Intern(name, id, email, school)
+  } else if (data.Employee == "Manager") {
+    const { name, id, email, officeNumber} = data;
+    employee = new Manager(name, id, email, officeNumber)
   }
-  
-  // function call to initialize program
-  init();
+
+  employees.push(employee);
+  console.log(employees);
+
+  if (data.finished) return init();
+
+
+  fs.writeFile(outputPath, render(employees), function (err) {
+    if (err) {
+      return console.log(err);
+    }
+
+    console.log("Success!");
+  });
+
+
+};
+
+// function call to initialize program
+init();
+
+
+// function init() {
+//   inquirer.prompt(questions).then((data) => {
+
+//     if (data.finished) return init();
+
+//     fs.writeFile(outputPath, render(data), function (err) {
+//       if (err) {
+//         return console.log(err);
+//       }
+
+//       console.log("Success!");
+//     });
+//   });
+// }
 
 
 // Write code to use inquirer to gather information about the development team members,
