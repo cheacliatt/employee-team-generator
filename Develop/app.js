@@ -57,24 +57,62 @@ const questions = [
   },
 ];
 
-// This is the function that using the generateMarkdown and the user's questions to generate the complete README.
-function init() {
-  inquirer.prompt(questions).then((data) => {
+const employees = [];
 
-    if (data.finished) return init();
 
-    fs.writeFile(outputPath, render(data), function (err) {
-      if (err) {
-        return console.log(err);
-      }
+const init = () => {
+  inquirer.prompt(questions).then(questionCompile);
+};
 
-      console.log("Success!");
-    });
+const questionCompile = (data) => {
+  let employee;
+  if (data.Employee == "Engineer") {
+    const { name, id, email, github } = data;
+    employee = new Engineer(name, id, email, github);
+  } else if (data.Employee == "Intern") {
+    const { name, id, email, school } = data;
+    employee = new Intern(name, id, email, school)
+  } else if (data.Employee == "Manager") {
+    const { name, id, email, officeNumber} = data;
+    employee = new Manager(name, id, email, officeNumber)
+  }
+
+  employees.push(employee);
+  console.log(employees);
+
+  if (data.finished) return init();
+
+
+  fs.writeFile(outputPath, render(employees), function (err) {
+    if (err) {
+      return console.log(err);
+    }
+
+    console.log("Success!");
   });
-}
+
+
+};
 
 // function call to initialize program
 init();
+
+
+// function init() {
+//   inquirer.prompt(questions).then((data) => {
+
+//     if (data.finished) return init();
+
+//     fs.writeFile(outputPath, render(data), function (err) {
+//       if (err) {
+//         return console.log(err);
+//       }
+
+//       console.log("Success!");
+//     });
+//   });
+// }
+
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
