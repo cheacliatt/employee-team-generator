@@ -10,70 +10,71 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-
 const questions = [
-    {
-      type: "input",
-      message: "What is your name?",
-      name: "name",
-    },
-    {
-      type: "input",
-      message: "What is your ID?",
-      name: "id",
-    },
-    {
-      type: "input",
-      message: "What is your email?",
-      name: "email",
-    },
-    {
-      type: "input",
-      message: "What is your office number?",
-      name: "officeNumber",
-    },
-    {
-      type: "list",
-      message: "Would you like to add another team member?",
-      name: "role",
-      choices: [
-        {
-          name: "Yes, add an Intern.",
-          value: "intern",
-        },
-        {
-          name: "Yes, add an Engineer",
-          value: "engineer",
-        },
-        {
-          name: "No, I'm good!!",
-          value: "none",
-        },
-      ],
-    },
-  ];
-  
-  // This is the function that using the generateMarkdown and the user's questions to generate the complete README.
-  function init() {
-    inquirer.prompt(questions).then((data) => {
-        if(role.Engineer === true){
-            prompt(questionsEngineer);
-        } else if ()
-      fs.writeFile("wat.html", render(data), function (
-        err
-      ) {
-        if (err) {
-          return console.log(err);
-        }
-  
-        console.log("Success!");
-      });
-    });
-  }
-  
-  // function call to initialize program
-  init();
+  {
+    type: "list",
+    message: "Which type of employee would you like to add?",
+    name: "Employee",
+    choices: ["Engineer", "Manager", "Intern"],
+  },
+  {
+    type: "input",
+    message: "What is their name?",
+    name: "name",
+  },
+  {
+    type: "input",
+    message: "What is their ID?",
+    name: "id",
+  },
+  {
+    type: "input",
+    message: "What is their email?",
+    name: "email",
+  },
+  {
+    type: "input",
+    message: "What is the manager's office number?",
+    name: "officeNumber",
+    when: (data) => data.Employee == "Manager",
+  },
+  {
+    type: "input",
+    message: "What is the engineer's GitHub username?",
+    name: "github",
+    when: (data) => data.Employee == "Engineer",
+  },
+  {
+    type: "input",
+    message: "What school does the intern attend?",
+    name: "school",
+    when: (data) => data.Employee == "Intern",
+  },
+  {
+    type: "confirm",
+    message: "Would you like to add another team member?",
+    name: "finished",
+  },
+];
 
+// This is the function that using the generateMarkdown and the user's questions to generate the complete README.
+function init() {
+  inquirer.prompt(questions).then((data) => {
+
+    if (data.finished) return init();
+
+    fs.writeFile(outputPath, render(data), function (err) {
+      if (err) {
+        return console.log(err);
+      }
+
+      console.log("Success!");
+    });
+  });
+}
+
+// function call to initialize program
+init();
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
