@@ -4,6 +4,8 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
+const validator = require("email-validator");
+const githubValidator = require("github-username-regex");
 // All the requirements to make this generator execute correctly
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
@@ -27,30 +29,52 @@ const questions = [
     type: "input",
     message: "What is their ID?",
     name: "id",
+    validate: (input) => {
+      if (Number.isInteger(parseInt(input))) {
+        return true;
+      } return "Please enter a valid ID number.";
+    },
   },
   {
     type: "input",
     message: "What is their email?",
     name: "email",
+    validate: (input) => {
+      const pass = validator.validate(input);
+      if (pass) {
+        return true;
+      }return "Please enter a valid email.";
+    },
   },
   {
     type: "input",
     message: "What is the manager's office number?",
     name: "officeNumber",
-    when: (data) => data.Employee == "Manager",
-    // When is a method a part of Inquirer that helps specify which questions should be called depending on which role the user chose
+     validate: (input) => {
+      if (Number.isInteger(parseInt(input))) {
+        return true;
+      } return "Please enter a valid ID number.";
+    },
+        // When is a method a part of Inquirer that helps specify which questions should be called depending on which role the user chose
+    when: (data) => data.role == "Manager",
   },
   {
     type: "input",
     message: "What is the engineer's GitHub username?",
     name: "github",
-    when: (data) => data.Employee == "Engineer",
+    validate: (input) => {
+      const githubEl = githubValidator.test(input);
+      if (githubEl) {
+        return true;
+      } return "Please enter a valid GitHub account.";
+    },
+    when: (data) => data.role == "Engineer",
   },
   {
     type: "input",
     message: "What school does the intern attend?",
     name: "school",
-    when: (data) => data.Employee == "Intern",
+    when: (data) => data.role == "Intern",
   },
   {
     type: "confirm",
